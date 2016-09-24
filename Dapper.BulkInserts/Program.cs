@@ -14,6 +14,8 @@ namespace Dapper.BulkInserts
             Console.Write(result.RenderResults());
 
             File.WriteAllText($"C:\\DapperBenchmarks\\Benchmark_{result.StartTime.Ticks}.json", JsonConvert.SerializeObject(result, Formatting.Indented));
+            File.WriteAllText($"C:\\DapperBenchmarks\\Benchmark_{result.StartTime.Ticks}.txt", result.RenderResults());
+            File.WriteAllText($"C:\\DapperBenchmarks\\Benchmark_{result.StartTime.Ticks}.csv", result.RenderResultCSV());
 
             Console.ReadLine();
         }
