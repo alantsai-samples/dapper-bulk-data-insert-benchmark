@@ -45,6 +45,15 @@ namespace Dapper.BulkInserts.Benchmark
                 WriteLine(@"Cleaning Database!");
                 productWriter.CleanProducts();
 
+                 WriteLine(@"====================================================");
+
+                WriteLine(@"Running inserts with separate Dapper Execute Calls using query");
+                WriteLine(@"Running connection.Query(Commands.WriteOne, product);");
+                var insertUsingForLoopQueryTime = InsertUsingForLoopUsingQuery();
+
+                WriteLine(@"Cleaning Database!");
+                productWriter.CleanProducts();
+
                 WriteLine(@"===============================================");
                 WriteLine(@"Running inserts with Single Dapper Execute Call and Passing a Collection!");
                 WriteLine(@"Running connection.Execute(Commands.WriteOne, products);");
@@ -61,7 +70,7 @@ namespace Dapper.BulkInserts.Benchmark
                 WriteLine(@"Cleaning Database!");
                 productWriter.CleanProducts();
 
-                result.Add(insertUsingForLoopTime, insertUsingDapperCollectionTime, insertUsingBatcAndTableValueParamTime);
+                result.Add(insertUsingForLoopTime, insertUsingDapperCollectionTime, insertUsingBatcAndTableValueParamTime, insertUsingForLoopQueryTime);
             }
 
             return result;
@@ -77,6 +86,21 @@ namespace Dapper.BulkInserts.Benchmark
             //}
 
             productWriter.WriteProductsWithExecuteForEach(products);
+
+            stopwatch.Stop();
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan InsertUsingForLoopUsingQuery()
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            //foreach (var product in products)
+            //{
+            //    productWriter.WriteSingleProduct(product);
+            //}
+
+            productWriter.WriteProductsWithExecuteForEachUsingQuery(products);
 
             stopwatch.Stop();
             return stopwatch.Elapsed;
