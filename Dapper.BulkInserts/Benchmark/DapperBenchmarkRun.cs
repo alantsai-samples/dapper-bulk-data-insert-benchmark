@@ -7,9 +7,11 @@ namespace Dapper.BulkInserts.Benchmark
     public class DapperBenchmarkRun
     {
         public TimeSpan InsertUsingForSingleInsertElapsed { get; set; }
+        public TimeSpan InsertUsingForSingleInsertQueryElapsed { get; set; }
 
         public TimeSpan InsertUsingDapperCollectionElapsed { get; set; }
         public TimeSpan InsertUsingDataTableParameter { get; set; }
+
     }
 
     public class DapperBenchmarkResult
@@ -34,11 +36,12 @@ namespace Dapper.BulkInserts.Benchmark
             NumberOfRuns = numberOfRuns;
         }
 
-        public void Add(TimeSpan singleInsertTime, TimeSpan collectionInsertTime, TimeSpan dataTableInsertTime)
+        public void Add(TimeSpan singleInsertTime, TimeSpan collectionInsertTime, TimeSpan dataTableInsertTime, TimeSpan forloopQueryTime)
         {
             Results.Add(new DapperBenchmarkRun
             {
                 InsertUsingDapperCollectionElapsed = collectionInsertTime,
+                InsertUsingForSingleInsertQueryElapsed = forloopQueryTime,
                 InsertUsingForSingleInsertElapsed = singleInsertTime,
                 InsertUsingDataTableParameter = dataTableInsertTime
             });
@@ -53,13 +56,28 @@ namespace Dapper.BulkInserts.Benchmark
 
             builder.Append("\n");
 
-            builder.Append("Single Insert \t \t || \t Collection Insert \t || \t Data Table Insert \n");
+            builder.Append("Single Insert \t || \t  Single Insert Query \t || \t Collection Insert \t || \t Data Table Insert \n");
             builder.Append("==================================================================================================\n");
 
             foreach (var resultSet in Results)
             {
                 builder.Append(
-                    $"{resultSet.InsertUsingForSingleInsertElapsed} \t || \t {resultSet.InsertUsingDapperCollectionElapsed} \t || \t {resultSet.InsertUsingDataTableParameter} \n");
+                    $"{resultSet.InsertUsingForSingleInsertElapsed} \t || \t {resultSet.InsertUsingForSingleInsertQueryElapsed} \t || \t {resultSet.InsertUsingDapperCollectionElapsed} \t || \t {resultSet.InsertUsingDataTableParameter} \n");
+            }
+
+            return builder.ToString();
+        }
+
+        public string RenderResultCSV()
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine("Single Insert, Single Insert Query, Collection, Tavble");
+
+             foreach (var resultSet in Results)
+            {
+                builder.AppendLine(
+                    $"{resultSet.InsertUsingForSingleInsertElapsed}, {resultSet.InsertUsingForSingleInsertQueryElapsed}, {resultSet.InsertUsingDapperCollectionElapsed}, {resultSet.InsertUsingDataTableParameter}");
             }
 
             return builder.ToString();

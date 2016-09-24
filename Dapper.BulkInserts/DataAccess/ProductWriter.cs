@@ -28,6 +28,17 @@ namespace Dapper.BulkInserts.DataAccess
             }
         }
 
+        public void WriteProductsWithExecuteForEachUsingQuery(List<Product> products)
+        {
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["ProductDapperDb"].ConnectionString))
+            {
+                foreach (var product in products)
+                {
+                    connection.Query(Commands.WriteOne, product);
+                }
+            }
+        }
+
         public void WriteProductCollection(List<Product> products)
         {
             using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["ProductDapperDb"].ConnectionString))
