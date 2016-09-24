@@ -70,7 +70,16 @@ namespace Dapper.BulkInserts.Benchmark
                 WriteLine(@"Cleaning Database!");
                 productWriter.CleanProducts();
 
-                result.Add(insertUsingForLoopTime, insertUsingDapperCollectionTime, insertUsingBatcAndTableValueParamTime, insertUsingForLoopQueryTime);
+                 WriteLine(@"===============================================");
+                WriteLine(@"Running inserts with Data Table using bulkcopy!");
+                WriteLine(@"bulk copy");
+                var insertUsingSqlBulkParamTime = InsertUsingDataTableWithSqlBulk();
+                
+                WriteLine(@"Cleaning Database!");
+                productWriter.CleanProducts();
+
+                result.Add(insertUsingForLoopTime, insertUsingDapperCollectionTime, 
+                    insertUsingBatcAndTableValueParamTime, insertUsingForLoopQueryTime, insertUsingSqlBulkParamTime);
             }
 
             return result;
@@ -121,6 +130,16 @@ namespace Dapper.BulkInserts.Benchmark
             var stopwatch = Stopwatch.StartNew();
 
             productWriter.WriteProductCollectionUsingDataTable(products);
+
+            stopwatch.Stop();
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan InsertUsingDataTableWithSqlBulk()
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            productWriter.WriteProductCollectionUsingDataTableWithSqlBulk(products);
 
             stopwatch.Stop();
             return stopwatch.Elapsed;

@@ -52,7 +52,31 @@ namespace Dapper.BulkInserts.DataAccess
             using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["ProductDapperDb"].ConnectionString))
             {
                 DataTable dataTable = GetDataTableForProducts(products);
-                connection.Execute(Commands.BatchInsert, new { @data = dataTable.AsTableValuedParameter("dbo.ProductType") });
+                connection.Execute(Commands.BatchInsert, new { @data = dataTable.AsTableValuedParameter("dbo.ProductType") }, commandTimeout: 10000);
+            }
+        }
+
+        public void WriteProductCollectionUsingDataTableWithSqlBulk(List<Product> products)
+        {
+            using (var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["ProductDapperDb"].ConnectionString))
+            {
+                connection.Open();
+                DataTable dataTable = GetDataTableForProducts(products);
+
+                using (SqlBulkCopy sqlBC = new SqlBulkCopy(connection))
+                {
+                    sqlBC.BatchSize = 1000;
+                    sqlBC.BulkCopyTimeout = 60;
+
+                    sqlBC.DestinationTableName = "dbo.Products";
+
+                    foreach (DataColumn item in dataTable.Columns)
+                    {
+                        sqlBC.ColumnMappings.Add(item.ColumnName, item.ColumnName);
+                    }
+
+                    sqlBC.WriteToServer(dataTable);
+                }
             }
         }
         

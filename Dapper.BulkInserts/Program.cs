@@ -9,7 +9,7 @@ namespace Dapper.BulkInserts
     {
         static void Main(string[] args)
         {
-            var result = new DapperBenchmark().RunBenchmark(50000, 10);
+            var result = new DapperBenchmark().RunBenchmark(100000, 10);
 
             Console.Write(result.RenderResults());
 
